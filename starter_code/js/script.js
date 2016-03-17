@@ -15,7 +15,7 @@
 // # Initialize the Soundcloud API client with our client ID
 //
 SC.initialize({
-  client_id: '5aa8e389ba4e24b6106af5159ab3e344'
+  client_id: 'f1cacb3ed86a79cc8e3629a46c881613'
 });
 
 
@@ -31,7 +31,21 @@ SC.initialize({
 // to execute. A page can't be manipulated safely until the document is ready.
 //
 $(document).ready(function () {
+
   // Add click handlers to 'go' and 'random' buttons here.
+  
+  $("#go").click(function (){
+    goClicked();
+  });
+  
+  $("#random").click(function () {
+    randomClicked();
+  });
+  
+  $("#reset-btn").click(function() {
+    $("#search-results").empty();
+  });
+  
 });
 
 
@@ -47,6 +61,8 @@ $(document).ready(function () {
 //
 function playOneTrack () {
   // TODO: fill this out
+  
+  
 }
 
 
@@ -68,6 +84,9 @@ var currentSong;
 //
 function goClicked () {
   // TODO: fill this out
+  var userChoice= $("#mood").val();
+  searchTracks(userChoice);
+  updateJumboTron(userChoice);
 }
 
 //
@@ -80,9 +99,20 @@ function goClicked () {
 //
 // * **mood**, the user's mood.
 //
-function searchTracks (mood) {
+function searchTracks(mood) {
   // TODO: fill this out
+  SC.get('/tracks', {
+    tags:mood,
+  }).then(function(tracks) {
+    console.log(tracks);
+    playTrack(tracks[0].id);
+    var songArt = $('<img src= ' + tracks[0].artwork_url + '>');
+    $('.jumbotron').append(songArt);
+    
+    
+  });
 }
+
 
 //
 // # Play a track
@@ -96,6 +126,9 @@ function searchTracks (mood) {
 //
 function playTrack (trackid) {
   // TODO: fill this out
+  SC.stream('/tracks/' + trackid).then(function(player){
+  player.play();
+});
 }
 
 //
@@ -108,6 +141,7 @@ function playTrack (trackid) {
 //
 function updateJumboTron (mood) {
   $('#moodstatus').text('It sounds like you are in a ' + mood +  ' mood!!');
+  
 }
 
 
@@ -118,15 +152,18 @@ function updateJumboTron (mood) {
 // =======================
 
 // List of moods
-var moodList = [];
+var moodList = ["sleepy", "hurt", "happy", "excited", "romantic", "scared"];
 
 //
 // # 'Random' button click handler
 //
 // Pick a mood at random from moodList and find a track for that mood.
 //
-function randomClicked () {
+function randomClicked() {
   // TODO: fill this out
+  var moodR = randomMood();
+  searchTracks(moodR);
+  updateJumboTron();
 }
 
 //
@@ -136,54 +173,10 @@ function randomClicked () {
 //
 function randomMood () {
   // TODO: fill this out
+  var pickMood = moodList[Math.floor((Math.random(moodList.length) * 5) + 1)];
+  return pickMood;
+  
 }
 
 
 
-// ========================
-//
-//     BONUS CHALLENGES
-//
-// ========================
-
-//
-// 1. Change the color of the jumbotron to fit the given mood.
-//
-// 2. Add a typeahead to the input field that shows the moods in our mood array.
-//
-
-//
-// 1. Change jumbotron color!
-//
-//
-// # Change the color of the jumbotron
-//
-// Update the background-color of the jumbotron using jQuery
-//
-// * **color**, the color to change to
-//
-function changeColor (color) {
-  // TODO: fill this out
-}
-
-//
-// # Get the mood color
-//
-// 1. Choose a color for the given mood and return it
-// ex. If 'happy', then return '#fffff' (white)
-// 2. Make sure to return a default color
-//
-// * **mood**, the user's mood
-//
-// * returns a color's hex code
-//
-function getColor (mood) {
-  // TODO: fill this out
-}
-
-
-//
-// 2. Typeahead
-//
-// Add a typeahead to the mood input field using the moodList as a source.
-//
